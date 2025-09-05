@@ -1,29 +1,44 @@
 <template>
   <Header></Header>
   <div class="container">
-    <Balance></Balance>
-    <IncomeExpenses></IncomeExpenses>
-    <TransactionList></TransactionList>
+    <Balance :total="total"></Balance>
+    <IncomeExpenses :income="income" :expense="expense"></IncomeExpenses>
+    <TransactionList :transactions="transactions"></TransactionList>
     <AddTransaction></AddTransaction>
   </div>
 </template>
-<script>
+<script setup>
+import { ref, computed } from "vue";
 import Header from "./components/Header.vue";
 import Balance from "./components/Balance.vue";
 import IncomeExpenses from "./components/IncomeExpenses.vue";
 import TransactionList from "./components/TransactionList.vue";
-import addTransaction from "./components/addTransaction.vue";
 import AddTransaction from "./components/addTransaction.vue";
 
-export default {
-  components: {
-    Header,
-    Balance,
-    IncomeExpenses,
-    TransactionList,
-    AddTransaction,
-  },
-};
+const transactions = ref([
+  { id: 1, text: "dog food", amount: -39.99 },
+  { id: 2, text: "camera", amount: -150.99 },
+  { id: 3, text: "laptop", amount: -199.99 },
+  { id: 4, text: "salary", amount: 499.99 },
+  { id: 5, text: "Book", amount: -19.99 },
+]);
+const total = computed(() => {
+  return transactions.value.reduce((acc, transaction) => {
+    return acc + transaction.amount;
+  }, 0);
+});
+const income = computed(() => {
+  return transactions.value.reduce((acc, transaction) => {
+    if (transaction.amount > 0) return acc + transaction.amount;
+    return acc;
+  }, 0);
+});
+const expense = computed(() => {
+  return transactions.value.reduce((acc, transaction) => {
+    if (transaction.amount < 0) return acc + transaction.amount;
+    return acc;
+  }, 0);
+});
 </script>
 
 <style scoped></style>
