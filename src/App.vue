@@ -3,8 +3,13 @@
   <div class="container">
     <Balance :total="total"></Balance>
     <IncomeExpenses :income="income" :expense="expense"></IncomeExpenses>
-    <TransactionList :transactions="transactions"></TransactionList>
-    <AddTransaction></AddTransaction>
+    <TransactionList
+      :transactions="transactions"
+      @transactionDeleted="onDeleteTransaction"
+    ></TransactionList>
+    <AddTransaction
+      @transactionSubmitted="onTransactionSubmitted"
+    ></AddTransaction>
   </div>
 </template>
 <script setup>
@@ -14,6 +19,9 @@ import Balance from "./components/Balance.vue";
 import IncomeExpenses from "./components/IncomeExpenses.vue";
 import TransactionList from "./components/TransactionList.vue";
 import AddTransaction from "./components/addTransaction.vue";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const transactions = ref([
   { id: 1, text: "dog food", amount: -39.99 },
@@ -39,6 +47,23 @@ const expense = computed(() => {
     return acc;
   }, 0);
 });
+const onTransactionSubmitted = (data) => {
+  transactions.value.push({
+    text: data.text,
+    amount: data.amount,
+    id: generateUniqueId(),
+  });
+  toast.success("Trasanction Added");
+};
+const generateUniqueId = () => {
+  return Math.floor(Math.random() * 1000000);
+};
+const onDeleteTransaction = (id) => {
+  const transactionIndex = transactions.value.findIndex((transaction) => {
+    return transaction.id === id;
+  });
+  transactions.value.splice(transactionIndex, 1);
+};
 </script>
 
 <style scoped></style>

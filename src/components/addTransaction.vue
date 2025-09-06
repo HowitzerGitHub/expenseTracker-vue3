@@ -21,8 +21,22 @@
 </template>
 
 <script setup>
-import { ref, defineModel } from "vue";
-const amount = defineModel();
-const text = defineModel();
-const onSubmit = () => {};
+import { ref } from "vue";
+import { useToast } from "vue-toastification";
+const emit = defineEmits(["transactionSubmitted"]);
+const toast = useToast();
+const text = ref();
+const amount = ref();
+const onSubmit = () => {
+  if (!text.value || !amount.value) {
+    toast.error("Both Fields Must be filled");
+  }
+  const transactionData = {
+    text: text.value,
+    amount: parseFloat(amount.value),
+  };
+  emit("transactionSubmitted", transactionData);
+  text.value = "";
+  amount.value = "";
+};
 </script>
